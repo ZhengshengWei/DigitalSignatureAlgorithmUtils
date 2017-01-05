@@ -29,7 +29,7 @@
     
     说明：
     
-    工具中的RSA,DSA,ECDSA算法使用前提需要有公钥、私钥，可以使用其他工具生成，或者使用插件自带，生成示例如下：
+    工具中RSA,DSA,ECDSA算法使用前提需要有对应算法的公钥、私钥，可以使用其他工具生成，或者使用本插件自带，生成示例如下：
     
     List<String> pairList = DSA.generatePrivateAndPublicKey();
     List<String> pairList = RSA.generatePrivateAndPublicKey();

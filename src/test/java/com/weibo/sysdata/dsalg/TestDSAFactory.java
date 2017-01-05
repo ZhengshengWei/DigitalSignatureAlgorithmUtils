@@ -21,18 +21,21 @@ public class TestDSAFactory extends TestCase {
     }
 
     @Test
-    public void testFactory(){
+    public void testFactory() throws Exception {
         final String message = "hello";
         final String TEST_KEY = "Wx2qiu1T$";
 
-        String h = DSAFactory.getInstance(DSASet.MD5).generateSignature(message, TEST_KEY);
+        String h = DSAFactory.getInstance(DSASet.MD5).generateSignature(new ArrayList<String>(){
+            {
+                add(message);
+            }
+        }, TEST_KEY);
         System.out.println(h);
         boolean valid = DSAFactory.getInstance(DSASet.MD5).verify(h, new ArrayList<String>(){
             {
                 add(message);
             }
-        }, TEST_KEY, true);
-
+        }, TEST_KEY);
         System.out.println(valid);
     }
 

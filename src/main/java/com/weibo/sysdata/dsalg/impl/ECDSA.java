@@ -5,8 +5,6 @@ import sun.misc.BASE64Encoder;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.DSAPrivateKey;
-import java.security.interfaces.DSAPublicKey;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.util.ArrayList;
@@ -20,36 +18,36 @@ public class ECDSA extends BaseDSA {
     private static final String DEFAULT_SUB_ALGORITHM = "SHA1withECDSA";
     private static final String DEFAULT_ALGORITHM = "EC";
 
-    public boolean verify(String h, List<String> messages, String publicKey, boolean isSort){
+    public  boolean verify(String h, List<String> messages, String publicKey, boolean isSort) throws Exception {
         return verify(h, messages, publicKey, isSort, DEFAULT_ALGORITHM , DEFAULT_SUB_ALGORITHM);
     }
 
     /**
      *
-     * @param h
+     * @param h             数字签名
      * @param messages
      * @param publicKey
      * @param isSort
      * @param subAlgorithm  两种算法可供选择 SHA1withDSA/RawDSA
      * @return
      */
-    public boolean verify(String h, List<String> messages, String publicKey, boolean isSort, String subAlgorithm){
+    public boolean verify(String h, List<String> messages, String publicKey, boolean isSort, String subAlgorithm) throws Exception {
         return verify(h, messages, publicKey, isSort, DEFAULT_ALGORITHM , subAlgorithm);
     }
 
-    public String generateSignature(String message, String key) {
-        return generateSignature(message, key, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM);
+    public  String generateSignature(List<String> messages, String key, boolean isSort) throws Exception {
+        return generateSignature(messages, key, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM, isSort);
     }
 
     /**
      *
-     * @param message
+     * @param messages
      * @param key
      * @param subAlgorithm  两种算法可供选择 SHA1withDSA/RawDSA
      * @return
      */
-    public  String generateSignature(String message, String key, String subAlgorithm){
-        return generateSignature(message, key, DEFAULT_ALGORITHM, subAlgorithm);
+    public  String generateSignature(List<String> messages, String key, String subAlgorithm, boolean isSort) throws Exception {
+        return generateSignature(messages, key, DEFAULT_ALGORITHM, subAlgorithm, isSort);
     }
 
     public static List<String> generatePrivateAndPublicKey(){
@@ -85,13 +83,17 @@ public class ECDSA extends BaseDSA {
     }
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws Exception {
         ECDSA ecds = new ECDSA();
         final String message = "hello";
         List<String> pairList = ecds.generatePrivateAndPublicKey();
         String publicKey = pairList.get(1);
         String privateKey = pairList.get(0);
-        String sign = ecds.generateSignature(message, privateKey);
+        String sign = ecds.generateSignature(new ArrayList<String>(){
+            {
+                add(message);
+            }
+        }, privateKey);
         System.out.println("ECDSA signature:" + sign);
 
         //verify

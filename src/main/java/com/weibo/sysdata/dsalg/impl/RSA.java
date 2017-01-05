@@ -1,5 +1,7 @@
 package com.weibo.sysdata.dsalg.impl;
 
+import com.weibo.sysdata.dsalgfactory.DSAFactory;
+import com.weibo.sysdata.dsalgfactory.DSASet;
 import sun.misc.BASE64Encoder;
 
 import java.security.KeyPair;
@@ -18,43 +20,48 @@ public class RSA extends BaseDSA {
     private static final String DEFAULT_SUB_ALGORITHM = "MD5withRSA";
     private static final String DEFAULT_ALGORITHM = "RSA";
 
-    public boolean verify(String h, List<String> messages, String publicKey, boolean isSort){
-        return verify(h, messages, publicKey, isSort, DEFAULT_ALGORITHM , DEFAULT_SUB_ALGORITHM);
-    }
-
     /**
-     *
-     * @param h
+     * @param h            数字签名
      * @param messages
-     * @param publicKey 为BASE64Encoder编码后结果
-     * @param isSort    是否需要排序
-     * @param subAlgorithm  三种算法可供选择 <tt>MD2withRSA</tt>, <tt>MD5withRSA</tt>, or <tt>SHA1withRSA</tt>.
+     * @param publicKey    为BASE64Encoder编码后结果
+     * @param isSort       是否需要排序
+     * @param subAlgorithm 三种算法可供选择 <tt>MD2withRSA</tt>, <tt>MD5withRSA</tt>, or <tt>SHA1withRSA</tt>.
      * @return
      */
-    public boolean verify(String h, List<String> messages, String publicKey, boolean isSort, String subAlgorithm){
-        return verify(h, messages, publicKey, isSort, DEFAULT_ALGORITHM , subAlgorithm);
+    public static boolean verify(String h, List<String> messages, String publicKey, boolean isSort, String subAlgorithm) throws Exception {
+        return verify(h, messages, publicKey, isSort, DEFAULT_ALGORITHM, subAlgorithm);
     }
 
-    public String generateSignature(String message, String key) {
-        return generateSignature(message, key, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM);
+
+    public boolean verify(String h, List<String> messages, String publicKey, boolean isSort) throws Exception {
+        return verify(h, messages, publicKey, isSort, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM);
     }
+
 
     /**
-     *
-     * @param message
+     * @param messages
      * @param key
-     * @param subAlgorithm  三种算法可供选择 <tt>MD2withRSA</tt>, <tt>MD5withRSA</tt>, or <tt>SHA1withRSA</tt>.
+     * @param subAlgorithm 三种算法可供选择 <tt>MD2withRSA</tt>, <tt>MD5withRSA</tt>, or <tt>SHA1withRSA</tt>.
      * @return
      */
-    public  String generateSignature(String message, String key, String subAlgorithm){
-        return generateSignature(message, key, DEFAULT_ALGORITHM, subAlgorithm);
+    public static String generateSignature(List<String> messages, String key, String subAlgorithm, boolean isSort) throws Exception {
+        return generateSignature(messages, key, DEFAULT_ALGORITHM, subAlgorithm, isSort);
+    }
+
+    public String generateSignature(List<String> messages, String key, boolean isSort) throws Exception {
+        return generateSignature(messages, key, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM, isSort);
+    }
+
+    public String generateSignature(List<String> messages, String key) throws Exception {
+        return generateSignature(messages, key, true);
     }
 
     /**
      * 生成公钥、私钥对
-     * @return  数组中第一位为私钥
+     *
+     * @return 数组中第一位为私钥
      */
-    private static List<String> generatePrivateAndPublicKey(String algorithm){
+    private static List<String> generatePrivateAndPublicKey(String algorithm) {
         ArrayList<String> keyPairList = new ArrayList<String>();
         // 1.初始化密钥
         KeyPairGenerator keyPairGenerator = null;
@@ -78,26 +85,31 @@ public class RSA extends BaseDSA {
         return keyPairList;
     }
 
-    public static List<String> generatePrivateAndPublicKey(){
+    public static List<String> generatePrivateAndPublicKey() {
         return generatePrivateAndPublicKey(DEFAULT_ALGORITHM);
     }
 
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws Exception {
         RSA rsa = new RSA();
         final String message = "hello";
-        List<String> pairList = rsa.generatePrivateAndPublicKey();
+        List<String> pairList = RSA.generatePrivateAndPublicKey();
         String publicKey = pairList.get(1);
         String privateKey = pairList.get(0);
-        String sign = rsa.generateSignature(message, privateKey);
-        System.out.println("RSA signature:" + sign);
 
-        //verify
-        boolean valid = rsa.verify(sign, new ArrayList<String>(){
+        String sign = DSAFactory.getInstance(DSASet.RSA).generateSignature(new ArrayList<String>() {
             {
                 add(message);
             }
-        }, publicKey, true);
+        }, privateKey);
+        System.out.println("RSA signature:" + sign);
+
+        //verify
+        boolean valid = rsa.verify(sign, new ArrayList<String>() {
+            {
+                add(message);
+            }
+        }, publicKey);
 
         System.out.println("result of valid:" + valid);
     }

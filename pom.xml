@@ -5,17 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.weibo.datasys</groupId>
-    <artifactId>dsa-utils</artifactId>
+    <artifactId>dsa-utils-factory</artifactId>
     <version>1.0-SNAPSHOT</version>
 
 
     <dependencies>
-        <dependency>
-            <groupId>com.weibo.api</groupId>
-            <artifactId>api-commons</artifactId>
-            <version>3.135</version>
-        </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -23,5 +17,18 @@
         </dependency>
 
     </dependencies>
+
+    <distributionManagement>
+        <repository>
+            <id>weibo.default</id>
+            <name>yuanming</name>
+            <url>http://redmine.intra.weibo.com:8081/nexus/content/repositories/releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>weibo.snapshots</id>
+            <name>yuanming</name>
+            <url>http://redmine.intra.weibo.com:8081/nexus/content/repositories/snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
 
 </project>

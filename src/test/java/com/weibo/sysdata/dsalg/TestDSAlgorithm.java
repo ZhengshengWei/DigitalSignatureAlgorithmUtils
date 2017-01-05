@@ -2,7 +2,9 @@ package com.weibo.sysdata.dsalg;
 
 
 
+import com.weibo.sysdata.dsalg.impl.DSA;
 import com.weibo.sysdata.dsalg.impl.ECDSA;
+import com.weibo.sysdata.dsalg.impl.MD5;
 import com.weibo.sysdata.dsalg.impl.RSA;
 import com.weibo.sysdata.dsalgfactory.DSAFactory;
 import com.weibo.sysdata.dsalgfactory.DSASet;
@@ -30,13 +32,17 @@ public class TestDSAlgorithm extends TestCase {
 
 
     @Test
-    public void testRSA(){
+    public void testRSA() throws Exception {
         RSA rsa = new RSA();
         final String message = "hello";
         List<String> pairList = rsa.generatePrivateAndPublicKey();
         String publicKey = pairList.get(1);
         String privateKey = pairList.get(0);
-        String sign = rsa.generateSignature(message, privateKey);
+        String sign = rsa.generateSignature(new ArrayList<String>(){
+            {
+                add(message);
+            }
+        }, privateKey);
         System.out.println("RSA signature:" + sign);
 
         //verify
@@ -50,13 +56,17 @@ public class TestDSAlgorithm extends TestCase {
     }
 
     @Test
-    public void testECDSA(){
+    public void testECDSA() throws Exception {
         ECDSA ecds = new ECDSA();
         final String message = "hello";
-        List<String> pairList = ecds.generatePrivateAndPublicKey();
+        List<String> pairList = ECDSA.generatePrivateAndPublicKey();
         String publicKey = pairList.get(1);
         String privateKey = pairList.get(0);
-        String sign = ecds.generateSignature(message, privateKey);
+        String sign = ecds.generateSignature(new ArrayList<String>(){
+            {
+                add(message);
+            }
+        }, privateKey);
         System.out.println("ECDSA signature:" + sign);
 
         //verify
@@ -64,8 +74,11 @@ public class TestDSAlgorithm extends TestCase {
             {
                 add(message);
             }
-        }, publicKey, true);
+        }, publicKey);
 
         System.out.println("result of valid:" + valid);
+    }
+
+    public void testOP(){
     }
 }

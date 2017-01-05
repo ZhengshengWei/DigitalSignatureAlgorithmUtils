@@ -25,3 +25,19 @@
      * @return 签名
      */
     public String generateSignature(String message, String key);
+    
+    
+    说明：
+    
+    工具中的RSA,DSA,ECDSA算法使用前提需要有公钥、私钥，可以使用其他工具生成，或者使用插件自带，生成示例如下：
+    
+    List<String> pairList = DSA.generatePrivateAndPublicKey();
+    List<String> pairList = RSA.generatePrivateAndPublicKey();
+    List<String> pairList = ECDSA.generatePrivateAndPublicKey();
+    
+    返回列表中包含两个值，其中0位是私钥，1位是公钥。
+    公钥全部采用BASE64编码。
+    
+    
+    
+    

@@ -1,7 +1,5 @@
 package com.weibo.sysdata.dsalg.impl;
 
-import com.weibo.sysdata.dsalgfactory.DSAFactory;
-import com.weibo.sysdata.dsalgfactory.DSASet;
 import sun.misc.BASE64Encoder;
 
 import java.security.KeyPair;
@@ -33,8 +31,12 @@ public class RSA extends BaseDSA {
     }
 
 
-    public boolean verify(String h, List<String> messages, String publicKey, boolean isSort) throws Exception {
+    public static boolean verify(String h, List<String> messages, String publicKey, boolean isSort) throws Exception {
         return verify(h, messages, publicKey, isSort, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM);
+    }
+
+    public static boolean verify(String h, List<String> messages, String publicKey) throws Exception {
+        return verify(h, messages, publicKey, true, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM);
     }
 
 
@@ -48,11 +50,11 @@ public class RSA extends BaseDSA {
         return generateSignature(messages, key, DEFAULT_ALGORITHM, subAlgorithm, isSort);
     }
 
-    public String generateSignature(List<String> messages, String key, boolean isSort) throws Exception {
+    public static String generateSignature(List<String> messages, String key, boolean isSort) throws Exception {
         return generateSignature(messages, key, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM, isSort);
     }
 
-    public String generateSignature(List<String> messages, String key) throws Exception {
+    public static String generateSignature(List<String> messages, String key) throws Exception {
         return generateSignature(messages, key, true);
     }
 
@@ -61,43 +63,38 @@ public class RSA extends BaseDSA {
      *
      * @return 数组中第一位为私钥
      */
-    private static List<String> generatePrivateAndPublicKey(String algorithm) {
+    private static List<String> generatePrivateAndPublicKey(String algorithm) throws NoSuchAlgorithmException {
         ArrayList<String> keyPairList = new ArrayList<String>();
         // 1.初始化密钥
         KeyPairGenerator keyPairGenerator = null;
-        try {
-            keyPairGenerator = KeyPairGenerator
-                    .getInstance(algorithm);
-            //设置KEY的长度
-            keyPairGenerator.initialize(512);
-            KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            //得到公钥
-            RSAPublicKey rsaPublicKey = (RSAPublicKey) keyPair.getPublic();
-            //得到私钥
-            RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) keyPair.getPrivate();
-            String publicKey = (new BASE64Encoder()).encode((rsaPublicKey.getEncoded()));
-            String privateKey = (new BASE64Encoder()).encode((rsaPrivateKey.getEncoded()));
-            keyPairList.add(privateKey);
-            keyPairList.add(publicKey);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        keyPairGenerator = KeyPairGenerator
+                .getInstance(algorithm);
+        //设置KEY的长度
+        keyPairGenerator.initialize(512);
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        //得到公钥
+        RSAPublicKey rsaPublicKey = (RSAPublicKey) keyPair.getPublic();
+        //得到私钥
+        RSAPrivateKey rsaPrivateKey = (RSAPrivateKey) keyPair.getPrivate();
+        String publicKey = (new BASE64Encoder()).encode((rsaPublicKey.getEncoded()));
+        String privateKey = (new BASE64Encoder()).encode((rsaPrivateKey.getEncoded()));
+        keyPairList.add(privateKey);
+        keyPairList.add(publicKey);
         return keyPairList;
     }
 
-    public static List<String> generatePrivateAndPublicKey() {
+    public static List<String> generatePrivateAndPublicKey() throws NoSuchAlgorithmException {
         return generatePrivateAndPublicKey(DEFAULT_ALGORITHM);
     }
 
 
     public static void main(String[] args) throws Exception {
-        RSA rsa = new RSA();
         final String message = "hello";
         List<String> pairList = RSA.generatePrivateAndPublicKey();
         String publicKey = pairList.get(1);
         String privateKey = pairList.get(0);
 
-        String sign = DSAFactory.getInstance(DSASet.RSA).generateSignature(new ArrayList<String>() {
+        String sign = RSA.generateSignature(new ArrayList<String>() {
             {
                 add(message);
             }
@@ -105,7 +102,7 @@ public class RSA extends BaseDSA {
         System.out.println("RSA signature:" + sign);
 
         //verify
-        boolean valid = rsa.verify(sign, new ArrayList<String>() {
+        boolean valid = RSA.verify(sign, new ArrayList<String>() {
             {
                 add(message);
             }

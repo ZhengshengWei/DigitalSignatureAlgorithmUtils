@@ -18,86 +18,89 @@ public class ECDSA extends BaseDSA {
     private static final String DEFAULT_SUB_ALGORITHM = "SHA1withECDSA";
     private static final String DEFAULT_ALGORITHM = "EC";
 
-    public  boolean verify(String h, List<String> messages, String publicKey, boolean isSort) throws Exception {
-        return verify(h, messages, publicKey, isSort, DEFAULT_ALGORITHM , DEFAULT_SUB_ALGORITHM);
+    public static boolean verify(String h, List<String> messages, String publicKey, boolean isSort) throws Exception {
+        return verify(h, messages, publicKey, isSort, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM);
     }
 
     /**
-     *
-     * @param h             数字签名
+     * @param h            数字签名
      * @param messages
      * @param publicKey
      * @param isSort
-     * @param subAlgorithm  两种算法可供选择 SHA1withDSA/RawDSA
+     * @param subAlgorithm 两种算法可供选择 SHA1withDSA/RawDSA
      * @return
      */
-    public boolean verify(String h, List<String> messages, String publicKey, boolean isSort, String subAlgorithm) throws Exception {
-        return verify(h, messages, publicKey, isSort, DEFAULT_ALGORITHM , subAlgorithm);
+    public static boolean verify(String h, List<String> messages, String publicKey, boolean isSort, String subAlgorithm) throws Exception {
+        return verify(h, messages, publicKey, isSort, DEFAULT_ALGORITHM, subAlgorithm);
     }
 
-    public  String generateSignature(List<String> messages, String key, boolean isSort) throws Exception {
-        return generateSignature(messages, key, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM, isSort);
+    public static boolean verify(String h, List<String> messages, String publicKey) throws Exception {
+        return verify(h, messages, publicKey, true, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM);
     }
 
     /**
-     *
      * @param messages
      * @param key
-     * @param subAlgorithm  两种算法可供选择 SHA1withDSA/RawDSA
+     * @param subAlgorithm 两种算法可供选择 SHA1withDSA/RawDSA
      * @return
      */
-    public  String generateSignature(List<String> messages, String key, String subAlgorithm, boolean isSort) throws Exception {
+    public static String generateSignature(List<String> messages, String key, String subAlgorithm, boolean isSort) throws Exception {
         return generateSignature(messages, key, DEFAULT_ALGORITHM, subAlgorithm, isSort);
     }
 
-    public static List<String> generatePrivateAndPublicKey(){
+    public static String generateSignature(List<String> messages, String key, boolean isSort) throws Exception {
+        return generateSignature(messages, key, DEFAULT_ALGORITHM, DEFAULT_SUB_ALGORITHM, isSort);
+    }
+
+    public static String generateSignature(List<String> messages, String key) throws Exception {
+        return generateSignature(messages, key, true);
+    }
+
+    public static List<String> generatePrivateAndPublicKey() throws NoSuchAlgorithmException {
         return generatePrivateAndPublicKey(DEFAULT_ALGORITHM);
     }
 
     /**
      * 生成公钥、私钥对
+     *
      * @return 数组中第一位为私钥
      */
-    private static List<String> generatePrivateAndPublicKey(String algorithm){
+    private static List<String> generatePrivateAndPublicKey(String algorithm) throws NoSuchAlgorithmException {
         ArrayList<String> keyPairList = new ArrayList<String>();
         // 1.初始化密钥
         KeyPairGenerator keyPairGenerator = null;
-        try {
-            keyPairGenerator = KeyPairGenerator
-                    .getInstance(algorithm);
-            //设置KEY的长度
-            keyPairGenerator.initialize(256);
-            KeyPair keyPair = keyPairGenerator.generateKeyPair();
-            //得到公钥
-            ECPublicKey ecPublicKey = (ECPublicKey) keyPair.getPublic();
-            //得到私钥
-            ECPrivateKey ecPrivateKey = (ECPrivateKey) keyPair.getPrivate();
-            String publicKey = (new BASE64Encoder()).encode((ecPublicKey.getEncoded()));
-            String privateKey = (new BASE64Encoder()).encode((ecPrivateKey.getEncoded()));
-            keyPairList.add(privateKey);
-            keyPairList.add(publicKey);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
+        keyPairGenerator = KeyPairGenerator
+                .getInstance(algorithm);
+        //设置KEY的长度
+        keyPairGenerator.initialize(256);
+        KeyPair keyPair = keyPairGenerator.generateKeyPair();
+        //得到公钥
+        ECPublicKey ecPublicKey = (ECPublicKey) keyPair.getPublic();
+        //得到私钥
+        ECPrivateKey ecPrivateKey = (ECPrivateKey) keyPair.getPrivate();
+        String publicKey = (new BASE64Encoder()).encode((ecPublicKey.getEncoded()));
+        String privateKey = (new BASE64Encoder()).encode((ecPrivateKey.getEncoded()));
+        keyPairList.add(privateKey);
+        keyPairList.add(publicKey);
         return keyPairList;
     }
 
 
     public static void main(String[] args) throws Exception {
-        ECDSA ecds = new ECDSA();
         final String message = "hello";
-        List<String> pairList = ecds.generatePrivateAndPublicKey();
+        List<String> pairList = ECDSA.generatePrivateAndPublicKey();
         String publicKey = pairList.get(1);
         String privateKey = pairList.get(0);
-        String sign = ecds.generateSignature(new ArrayList<String>(){
+        String sign = ECDSA.generateSignature(new ArrayList<String>() {
             {
                 add(message);
             }
         }, privateKey);
         System.out.println("ECDSA signature:" + sign);
 
+
         //verify
-        boolean valid = ecds.verify(sign, new ArrayList<String>(){
+        boolean valid = ECDSA.verify(sign, new ArrayList<String>() {
             {
                 add(message);
             }

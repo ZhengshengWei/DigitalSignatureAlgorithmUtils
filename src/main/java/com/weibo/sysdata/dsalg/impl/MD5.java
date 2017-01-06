@@ -1,6 +1,5 @@
 package com.weibo.sysdata.dsalg.impl;
 
-import com.weibo.sysdata.dsalg.DigitalSignatureAlgorithm;
 import com.weibo.sysdata.dsalg.utils.DSAUtils;
 
 import java.security.MessageDigest;
@@ -11,7 +10,7 @@ import java.util.List;
 /**
  * Created by zhengsheng on 2017/1/4.
  */
-public class MD5 extends DigitalSignatureAlgorithm {
+public class MD5 {
 
     /**
      * 验证签名
@@ -22,7 +21,7 @@ public class MD5 extends DigitalSignatureAlgorithm {
      * @param isSort    是否排序
      * @return
      */
-    public boolean verify(String h, List<String> messages, String publicKey, boolean isSort) throws NoSuchAlgorithmException {
+    public static boolean verify(String h, List<String> messages, String publicKey, boolean isSort) throws NoSuchAlgorithmException {
         boolean valid = false;
         final String request = DSAUtils.concatenate(messages, isSort);
         String md5 = generateSignature(new ArrayList<String>() {
@@ -37,6 +36,11 @@ public class MD5 extends DigitalSignatureAlgorithm {
     }
 
 
+    public static boolean verify(String h, List<String> messages, String publicKey) throws NoSuchAlgorithmException {
+        return verify(h, messages, publicKey, true);
+    }
+
+
     /**
      * 生成数字签名
      *
@@ -45,10 +49,14 @@ public class MD5 extends DigitalSignatureAlgorithm {
      * @param isSort   是否排序
      * @return 签名
      */
-    public String generateSignature(List<String> messages, String key, boolean isSort) throws NoSuchAlgorithmException {
+    public static String generateSignature(List<String> messages, String key, boolean isSort) throws NoSuchAlgorithmException {
         String request = DSAUtils.concatenate(messages, isSort);
         String signature = md5(key + request);
         return signature;
+    }
+
+    public static String generateSignature(List<String> messages, String key) throws NoSuchAlgorithmException {
+        return generateSignature(messages, key, true);
     }
 
 
@@ -70,6 +78,7 @@ public class MD5 extends DigitalSignatureAlgorithm {
 
     /**
      * 转换字节至十六进制
+     *
      * @param bytes
      * @return
      */
@@ -86,6 +95,7 @@ public class MD5 extends DigitalSignatureAlgorithm {
 
     /**
      * 转换长整形至字节
+     *
      * @param longArray
      * @return
      */
@@ -105,17 +115,18 @@ public class MD5 extends DigitalSignatureAlgorithm {
     }
 
     public static void main(String[] args) throws Exception {
-        MD5 md5 = new MD5();
         final String message = "hello";
         final String TEST_KEY = "Wx2qiu1T$";
 
-        String h = md5.generateSignature(new ArrayList<String>() {
+        String h = MD5.generateSignature(new ArrayList<String>() {
             {
                 add(message);
             }
         }, TEST_KEY);
         System.out.println(h);
-        boolean valid = md5.verify(h, new ArrayList<String>() {
+
+        //verify
+        boolean valid = MD5.verify(h, new ArrayList<String>() {
             {
                 add(message);
             }

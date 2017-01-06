@@ -1,10 +1,8 @@
 package com.weibo.sysdata.dsalg.impl;
 
-import com.weibo.sysdata.dsalg.DigitalSignatureAlgorithm;
 import com.weibo.sysdata.dsalg.utils.DSAUtils;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
-
 import java.security.*;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -13,9 +11,9 @@ import java.util.List;
 /**
  * Created by zhengsheng on 2017/1/4.
  */
-public abstract class BaseDSA extends DigitalSignatureAlgorithm {
+public abstract class BaseDSA {
 
-    public static boolean verify(String h, List<String> messages, String publicKey, boolean isSort, String algorithm, String subAlgorithm) throws Exception {
+    public  static boolean verify(String h, List<String> messages, String publicKey, boolean isSort, String algorithm, String subAlgorithm) throws Exception {
         boolean valid = false;
         //用公钥进行验证签名
         PublicKey pKey = null;

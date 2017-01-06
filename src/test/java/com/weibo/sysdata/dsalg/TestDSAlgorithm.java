@@ -90,7 +90,6 @@ public class TestDSAlgorithm extends TestCase {
         System.out.println("result of valid:" + valid);
     }
 
-
     @Test
     public void testECDSA() throws Exception {
         final String message = "hello";
